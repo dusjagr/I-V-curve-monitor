@@ -6,9 +6,9 @@ import os
 
 app = Flask(__name__)
 
-# ThingSpeak configuration
-CHANNEL_ID = "2860934"  # You'll need to fill this in
-READ_API_KEY = "MA2OFWB36S4YOVUP"  # You'll need to fill this in
+# Get ThingSpeak credentials from environment variables
+CHANNEL_ID = os.getenv('THINGSPEAK_CHANNEL_ID', '2860934')
+READ_API_KEY = os.getenv('THINGSPEAK_READ_API_KEY', 'MA2OFWB36S4YOVUP')
 THINGSPEAK_BASE_URL = "https://api.thingspeak.com/channels"
 ZURICH_TZ = pytz.timezone('Europe/Zurich')
 
