@@ -1,10 +1,12 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, jsonify, render_template
+from flask_cors import CORS
 import requests
-from datetime import datetime, timedelta
 import pytz
+from datetime import datetime, timedelta
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 # Get ThingSpeak credentials from environment variables
 CHANNEL_ID = os.getenv('THINGSPEAK_CHANNEL_ID', '2860934')
@@ -70,6 +72,19 @@ def process_thingspeak_data(data):
     
     return measurements
 
+def get_local_ip():
+    import socket
+    try:
+        # Get all network interfaces
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Doesn't need to be reachable, just triggers interface lookup
+        s.connect(('8.8.8.8', 1))
+        local_ip = s.getsockname()[0]
+        s.close()
+        return local_ip
+    except:
+        return '127.0.0.1'
+
 @app.route('/')
 def index():
     """Render the main page"""
@@ -104,4 +119,12 @@ def after_request(response):
     return response
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    local_ip = get_local_ip()
+    print("\n*** I-V Curve Monitor is running! ***")
+    print("----------------------------------------")
+    print("Access locally at:")
+    print("-> http://localhost:5000")
+    print("-> http://ivcurve_thingspeak.local:5000")
+    print(f"-> http://{local_ip}:5000")
+    print("----------------------------------------\n")
+    app.run(debug=True, host='0.0.0.0', port=5000, ssl_context=None)
